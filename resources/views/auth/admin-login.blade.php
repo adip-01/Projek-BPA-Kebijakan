@@ -96,30 +96,29 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ url('/login') }}">
-            @csrf
+        <form method="POST" action="{{ url('/admin/login') }}">
+    @csrf
 
-            <div class="mb-4">
-                <input type="email"
-                       class="form-control"
-                       name="email"
-                       placeholder="Username / Email"
-                       required>
-            </div>
+    <div class="mb-4">
+        <input type="email"
+               class="form-control"
+               name="email"
+               placeholder="Username / Email"
+               required>
+    </div>
 
-            <div class="mb-4">
-                <input type="password"
-                       class="form-control"
-                       name="password"
-                       placeholder="Password"
-                       required>
-            </div>
+    <div class="mb-4">
+        <input type="password"
+               class="form-control"
+               name="password"
+               placeholder="Password"
+               required>
+    </div>
 
-            <button type="submit" class="btn-login">
-                Login Admin
-            </button>
-
-        </form>
+    <button type="submit" class="btn-login">
+        Login Admin
+    </button>
+</form>
 
         <div class="register">
             Don't have an account?
