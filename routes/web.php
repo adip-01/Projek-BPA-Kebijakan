@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Admin\DashboardController;
 
 // HOME
 Route::get('/', function () {
@@ -12,35 +13,34 @@ Route::get('/', function () {
 
 // ================= USER =================
 
-// FORM LOGIN USER
-Route::get('/login', [LoginController::class, 'showUserLogin']);
+// FORM LOGIN USER (Wajib pakai name('login') untuk middleware auth)
+Route::get('/login', [LoginController::class, 'showUserLogin'])->name('login');
 
 // PROSES LOGIN USER
 Route::post('/login', [LoginController::class, 'userLogin']);
 
 // REGISTER
-Route::get('/register', [RegisterController::class, 'showRegisterForm']);
-
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
 // DASHBOARD USER
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware('auth');
+})->middleware('auth')->name('dashboard');
 
 
 // ================= ADMIN =================
 
 // FORM LOGIN ADMIN
-Route::get('/admin/login', [LoginController::class, 'showAdminLogin']);
+Route::get('/admin/login', [LoginController::class, 'showAdminLogin'])->name('admin.login');
 
 // PROSES LOGIN ADMIN
 Route::post('/admin/login', [LoginController::class, 'adminLogin']);
 
 // DASHBOARD ADMIN
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware('auth');
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 
 // LOGOUT
