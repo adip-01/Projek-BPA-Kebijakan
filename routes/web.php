@@ -1,47 +1,49 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\LoginController; // Pastikan ini mengarah ke file LoginController milikmu
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminUserController;
 
-// HOME
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect()->route('login');
 });
 
+// Login routes (menggunakan LoginController milikmu)
+Route::get('/login', [LoginController::class, 'showUserLogin'])
+    ->name('login')
+    ->middleware('guest');
 
-// ================= USER =================
+Route::post('/login', [LoginController::class, 'userLogin'])
+    ->middleware('guest');
 
-// FORM LOGIN USER (Wajib pakai name('login') untuk middleware auth)
-Route::get('/login', [LoginController::class, 'showUserLogin'])->name('login');
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
-// PROSES LOGIN USER
-Route::post('/login', [LoginController::class, 'userLogin']);
+/*
+|--------------------------------------------------------------------------
+| Protected Admin Routes (harus login)
+|--------------------------------------------------------------------------
+*/
 
-// REGISTER
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+Route::middleware(['auth'])->group(function () {
 
-// DASHBOARD USER
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+    // Dashboard utama
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
 
+    // CRUD Admin Users
+    Route::prefix('dashboard/admins')->name('admins.')->group(function () {
+        Route::get('/',         [AdminUserController::class, 'index'])   ->name('index');
+        Route::post('/',        [AdminUserController::class, 'store'])   ->name('store');
+        Route::put('/{user}',   [AdminUserController::class, 'update'])  ->name('update');
+        Route::delete('/{user}',[AdminUserController::class, 'destroy']) ->name('destroy');
+    });
 
-// ================= ADMIN =================
-
-// FORM LOGIN ADMIN
-Route::get('/admin/login', [LoginController::class, 'showAdminLogin'])->name('admin.login');
-
-// PROSES LOGIN ADMIN
-Route::post('/admin/login', [LoginController::class, 'adminLogin']);
-
-// DASHBOARD ADMIN
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
-
-
-// LOGOUT
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
