@@ -12,11 +12,8 @@ use App\Http\Controllers\BisnisProsesController;
 
 use App\Http\Controllers\DokumenUnitController;
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\SasaranMutuController;
+
 
 Route::get('/', function () {
 
@@ -24,15 +21,12 @@ Route::get('/', function () {
 
 });
 
-// Login routes (menggunakan LoginController milikmu)
 
 Route::get('/login', [LoginController::class, 'showUserLogin'])
     ->name('login')
     ->middleware('guest');
-
 Route::post('/login', [LoginController::class, 'userLogin'])
     ->middleware('guest');
-
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
 
@@ -83,5 +77,18 @@ Route::prefix('dashboard/dokumen-unit')->name('dokumen-unit.')->group(function (
     Route::post('/{dokumenUnit}',      [DokumenUnitController::class, 'update'])  ->name('update');
     Route::delete('/{dokumenUnit}',    [DokumenUnitController::class, 'destroy']) ->name('destroy');
 });
-
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+    Route::get('/sasaran-mutu', [SasaranMutuController::class, 'index'])
+        ->name('sasaran-mutu.index');
+ 
+    Route::post('/sasaran-mutu', [SasaranMutuController::class, 'store'])
+        ->name('sasaran-mutu.store');
+ 
+    Route::post('/sasaran-mutu/{sasaran}', [SasaranMutuController::class, 'update'])
+        ->name('sasaran-mutu.update');
+ 
+    Route::delete('/sasaran-mutu/{sasaran}', [SasaranMutuController::class, 'destroy'])
+        ->name('sasaran-mutu.destroy');
+});
 });
