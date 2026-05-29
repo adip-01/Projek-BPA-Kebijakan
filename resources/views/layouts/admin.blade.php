@@ -136,14 +136,14 @@
     <span class="dot-indicator {{ request()->routeIs('bisnis-proses.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
 </a>
 
-            <a href="#"
-            class="nav-item text-brand-700 flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/>
-                </svg>
-                Tentang Dokumen Unit
-            </a>
+            <a href="{{ route('dokumen-unit.index') }}"
+   class="nav-item {{ request()->routeIs('dokumen-unit.*') ? 'nav-active' : 'text-brand-700' }} flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+    </svg>
+    Tentang Dokumen Unit
+    <span class="dot-indicator {{ request()->routeIs('dokumen-unit.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
+</a>
 
             <a href="#"
             class="nav-item text-brand-700 flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">

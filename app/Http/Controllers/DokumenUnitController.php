@@ -18,35 +18,61 @@ class DokumenUnitController extends Controller
      * Tampilkan halaman utama.
      * Data dikelompokkan per unit_bpa untuk ditampilkan sebagai card.
      */
-    public function index()
-    {
-        // Ambil semua unit BPA unik
-        $unitList = DokumenUnit::select('unit_bpa')
-            ->distinct()
-            ->orderBy('unit_bpa')
-            ->pluck('unit_bpa');
+    public function index(Request $request)
+{
+    // Jika request AJAX untuk satu unit
+    if ($request->has('json') && $request->has('unit')) {
+        $unit    = $request->unit;
+        $spesifiks = self::JENIS_SPESIFIK;
 
-        // Statistik per unit: hitung dokumen per jenis_spesifik & jenis_dokumen
-        $stats = [];
-        foreach ($unitList as $unit) {
-            foreach (self::JENIS_DOKUMEN as $jenis) {
-                foreach (self::JENIS_SPESIFIK as $spesifik) {
-                    $stats[$unit][$jenis][$spesifik] = DokumenUnit::where('unit_bpa', $unit)
-                        ->where('jenis_dokumen', $jenis)
-                        ->where('jenis_spesifik', $spesifik)
-                        ->count();
-                }
-            }
+        $milik      = [];
+        $distribusi = [];
+        foreach ($spesifiks as $s) {
+            $milik[$s]      = DokumenUnit::where('unit_bpa', $unit)
+                ->where('jenis_dokumen', 'Dokumen Milik')
+                ->where('jenis_spesifik', $s)->count();
+            $distribusi[$s] = DokumenUnit::where('unit_bpa', $unit)
+                ->where('jenis_dokumen', 'Dokumen Distribusi')
+                ->where('jenis_spesifik', $s)->count();
         }
 
-        return view('admin.dokumen-unit.index', [
-            'unitList'      => $unitList,
-            'stats'         => $stats,
-            'jenisDokumen'  => self::JENIS_DOKUMEN,
-            'jenisSpesifik' => self::JENIS_SPESIFIK,
-            'totalUnit'     => $unitList->count(),
+        $total   = array_sum($milik) + array_sum($distribusi);
+        $last    = DokumenUnit::where('unit_bpa', $unit)->latest()->first();
+
+        return response()->json([
+            'total'             => $total,
+            'milik'             => $milik,
+            'distribusi'        => $distribusi,
+            'lastId'            => $last?->id,
+            'lastJenisDokumen'  => $last?->jenis_dokumen  ?? '',
+            'lastJenisSpesifik' => $last?->jenis_spesifik ?? '',
         ]);
     }
+
+    // ── Render halaman normal (kode lama tetap di bawah ini) ──
+    $unitList = DokumenUnit::select('unit_bpa')
+        ->distinct()->orderBy('unit_bpa')->pluck('unit_bpa');
+
+    $stats = [];
+    foreach ($unitList as $unit) {
+        foreach (self::JENIS_DOKUMEN as $jenis) {
+            foreach (self::JENIS_SPESIFIK as $spesifik) {
+                $stats[$unit][$jenis][$spesifik] = DokumenUnit::where('unit_bpa', $unit)
+                    ->where('jenis_dokumen', $jenis)
+                    ->where('jenis_spesifik', $spesifik)
+                    ->count();
+            }
+        }
+    }
+
+    return view('admin.dokumen-unit.index', [
+        'unitList'      => $unitList,
+        'stats'         => $stats,
+        'jenisDokumen'  => self::JENIS_DOKUMEN,
+        'jenisSpesifik' => self::JENIS_SPESIFIK,
+        'totalUnit'     => $unitList->count(),
+    ]);
+}
 
     /**
      * Simpan dokumen baru — return JSON.
