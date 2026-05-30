@@ -170,13 +170,14 @@
                 Dokumen SPMI
             </a>
 
-            <a href="#"
-            class="nav-item text-brand-700 flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
-                </svg>
-                Informasi Tambahan
-            </a>
+            <a href="{{ route('informasi-tambahan.index') }}"
+   class="nav-item {{ request()->routeIs('informasi-tambahan.*') ? 'nav-active' : 'text-brand-700' }} flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+    </svg>
+    Informasi Tambahan
+    <span class="dot-indicator {{ request()->routeIs('informasi-tambahan.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
+</a>
 
             {{-- PENGATURAN --}}
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 pt-4 pb-1">Pengaturan</p>

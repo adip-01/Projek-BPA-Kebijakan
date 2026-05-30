@@ -14,6 +14,10 @@ use App\Http\Controllers\DokumenUnitController;
 
 use App\Http\Controllers\SasaranMutuController;
 
+use App\Http\Controllers\InformasiTambahanController;
+
+use App\Http\Controllers\DaftarDokumenController;
+
 
 Route::get('/', function () {
 
@@ -35,6 +39,21 @@ Route::post('/logout', [LoginController::class, 'logout'])
 | Protected Admin Routes (harus login)
 |--------------------------------------------------------------------------
 */
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+    // ── Halaman utama dashboard ────────────────────────────────
+    // GET /dashboard
+    Route::get('/', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
+ 
+    // ── CRUD dokumen via AJAX ──────────────────────────────────
+ 
+    // POST   /dashboard/daftar-dokumen
+    Route::post('/daftar-dokumen', [DaftarDokumenController::class, 'store'])->name('daftar-dokumen.store');
+Route::post('/daftar-dokumen/{id}', [DaftarDokumenController::class, 'update'])->name('daftar-dokumen.update');
+Route::delete('/daftar-dokumen/{id}', [DaftarDokumenController::class, 'destroy'])->name('daftar-dokumen.destroy');
+ 
+});
 
 Route::middleware(['auth'])->group(function () {
 
@@ -90,5 +109,20 @@ Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
  
     Route::delete('/sasaran-mutu/{sasaran}', [SasaranMutuController::class, 'destroy'])
         ->name('sasaran-mutu.destroy');
+});
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+ 
+    Route::get('/informasi-tambahan', [InformasiTambahanController::class, 'index'])
+        ->name('informasi-tambahan.index');
+ 
+    Route::post('/informasi-tambahan', [InformasiTambahanController::class, 'store'])
+        ->name('informasi-tambahan.store');
+ 
+    Route::post('/informasi-tambahan/{informasiTambahan}', [InformasiTambahanController::class, 'update'])
+        ->name('informasi-tambahan.update');
+    Route::delete('/informasi-tambahan/{informasiTambahan}', [InformasiTambahanController::class, 'destroy'])
+        ->name('informasi-tambahan.destroy');
+ 
 });
 });
