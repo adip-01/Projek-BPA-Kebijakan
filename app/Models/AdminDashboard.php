@@ -6,16 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class DaftarDokumen extends Model
+class AdminDashboard extends Model
 {
     use HasFactory;
 
     /**
-     * Eksplisit karena Laravel akan menebak "daftar_dokumen" (singular).
+     * Nama tabel yang digunakan model ini.
      *
      * @var string
      */
-    protected $table = 'daftar_dokumens';
+    protected $table = 'admin_dashboards';
 
     /**
      * Kolom yang boleh diisi secara mass-assignment.
@@ -23,49 +23,41 @@ class DaftarDokumen extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        // Step 1
-        'standard',
-        'klasul',
-        'jenis_dokumen',
         'nama_dokumen',
-        'pemilik_dokumen',
-        'data_pendukung',
-        // Step 2
-        'link_aplikasi',
-        'revisi_dokumen',
-        'tanggal_efektif',
+        'jenis_bpa',
         'path_dokumen',
     ];
 
     /**
-     * Cast kolom tanggal agar otomatis jadi Carbon instance.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'tanggal_efektif' => 'date',
-    ];
-
-    /**
-     * Sertakan accessor file_url di setiap response JSON / array.
+     * Sertakan accessor file_url di setiap respons JSON / array.
      *
      * @var array<int, string>
      */
     protected $appends = ['file_url'];
+
+    /**
+     * Pilihan jenis BPA yang valid.
+     * Dipakai untuk validasi 'in:' dan dropdown.
+     *
+     * @var array<int, string>
+     */
+    public const BPA_OPTIONS = [
+        'BPA 1',
+        'BPA 2',
+        'BPA 3',
+        'BPA 4',
+    ];
 
     // ──────────────────────────────────────────────────────────────
     // ACCESSOR
     // ──────────────────────────────────────────────────────────────
 
     /**
-     * URL publik file dokumen PDF.
-     * Mengembalikan null jika belum ada file.
+     * URL publik file PDF.
+     * Mengembalikan null jika belum ada file tersimpan.
      *
-     * Contoh pemakaian di Blade:
-     *   <a href="{{ $dok->file_url }}">Download</a>
-     *
-     * Contoh pemakaian di JavaScript (JSON response):
-     *   response.data.file_url
+     * Contoh di Blade : <a href="{{ $dok->file_url }}">Download</a>
+     * Contoh di JS    : response.data.file_url
      *
      * @return string|null
      */

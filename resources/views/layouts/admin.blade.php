@@ -154,21 +154,23 @@
     <span class="dot-indicator {{ request()->routeIs('sasaran-mutu.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
 </a>
 
-            <a href="#"
-            class="nav-item text-brand-700 flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"/>
-                </svg>
-                Daftar Dokumen
-            </a>
+            <a href="{{ route('daftar-dokumen.index') }}"
+   class="nav-item {{ request()->routeIs('daftar-dokumen.*') ? 'nav-active' : 'text-brand-700' }} flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"/>
+    </svg>
+    Daftar Dokumen
+    <span class="dot-indicator {{ request()->routeIs('daftar-dokumen.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
+</a>
 
-            <a href="#"
-            class="nav-item text-brand-700 flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                </svg>
-                Dokumen SPMI
-            </a>
+            <a href="{{ route('dokumen-spmi.index') }}"
+   class="nav-item {{ request()->routeIs('dokumen-spmi.*') ? 'nav-active' : 'text-brand-700' }} flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+    </svg>
+    Dokumen SPMI
+    <span class="dot-indicator {{ request()->routeIs('dokumen-spmi.*') ? 'inline-block' : 'hidden' }} ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
+</a>
 
             <a href="{{ route('informasi-tambahan.index') }}"
    class="nav-item {{ request()->routeIs('informasi-tambahan.*') ? 'nav-active' : 'text-brand-700' }} flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition">

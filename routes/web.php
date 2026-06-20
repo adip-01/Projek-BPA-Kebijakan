@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController; 
 
+use App\Http\Controllers\RegisterController;
+
 use App\Http\Controllers\AdminDashboardController;
 
 use App\Http\Controllers\AdminUserController;
@@ -17,6 +19,8 @@ use App\Http\Controllers\SasaranMutuController;
 use App\Http\Controllers\InformasiTambahanController;
 
 use App\Http\Controllers\DaftarDokumenController;
+
+use App\Http\Controllers\DokumenSpmiController;
 
 
 Route::get('/', function () {
@@ -33,6 +37,11 @@ Route::post('/login', [LoginController::class, 'userLogin'])
     ->middleware('guest');
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
+    Route::get('/register', [LoginController::class, 'showRegister'])
+    ->name('register')
+    ->middleware('guest');
+    Route::post('/register', [LoginController::class, 'register'])
+    ->middleware('guest');
 
 /*
 |--------------------------------------------------------------------------
@@ -49,9 +58,9 @@ Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
     // ── CRUD dokumen via AJAX ──────────────────────────────────
  
     // POST   /dashboard/daftar-dokumen
-    Route::post('/daftar-dokumen', [DaftarDokumenController::class, 'store'])->name('daftar-dokumen.store');
-Route::post('/daftar-dokumen/{id}', [DaftarDokumenController::class, 'update'])->name('daftar-dokumen.update');
-Route::delete('/daftar-dokumen/{id}', [DaftarDokumenController::class, 'destroy'])->name('daftar-dokumen.destroy');
+    Route::post('/admin_dashboard', [AdminDashboardController::class, 'store'])->name('admin_dashboard.store');
+Route::post('/admin_dashboard/{id}', [AdminDashboardController::class, 'update'])->name('admin_dashboard.update');
+Route::delete('/admin_dashboard/{id}', [AdminDashboardController::class, 'destroy'])->name('admin_dashboard.destroy');
  
 });
 
@@ -123,6 +132,66 @@ Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
         ->name('informasi-tambahan.update');
     Route::delete('/informasi-tambahan/{informasiTambahan}', [InformasiTambahanController::class, 'destroy'])
         ->name('informasi-tambahan.destroy');
+ 
+});
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+    // INDEX  — GET    /dashboard/daftar-dokumen
+    Route::get('/daftar-dokumen', [DaftarDokumenController::class, 'index'])
+        ->name('daftar-dokumen.index');
+ 
+    // STORE  — POST   /dashboard/daftar-dokumen
+    Route::post('/daftar-dokumen', [DaftarDokumenController::class, 'store'])
+        ->name('daftar-dokumen.store');
+ 
+    // UPDATE — POST   /dashboard/daftar-dokumen/{daftarDokumen}
+    // Menggunakan POST agar FormData multipart bekerja benar dari Alpine.js.
+    Route::post('/daftar-dokumen/{daftarDokumen}', [DaftarDokumenController::class, 'update'])
+        ->name('daftar-dokumen.update');
+ 
+    // DESTROY — DELETE /dashboard/daftar-dokumen/{daftarDokumen}
+    Route::delete('/daftar-dokumen/{daftarDokumen}', [DaftarDokumenController::class, 'destroy'])
+        ->name('daftar-dokumen.destroy');
+ 
+});
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+    // INDEX  — GET    /dashboard/dokumen-spmi
+    Route::get('/dokumen-spmi', [DokumenSpmiController::class, 'index'])
+        ->name('dokumen-spmi.index');
+ 
+    // STORE  — POST   /dashboard/dokumen-spmi
+    Route::post('/dokumen-spmi', [DokumenSpmiController::class, 'store'])
+        ->name('dokumen-spmi.store');
+ 
+    // UPDATE — POST   /dashboard/dokumen-spmi/{dokumenSpmi}
+    // Menggunakan POST agar FormData multipart bekerja benar dari Alpine.js.
+    Route::post('/dokumen-spmi/{dokumenSpmi}', [DokumenSpmiController::class, 'update'])
+        ->name('dokumen-spmi.update');
+ 
+    // DESTROY — DELETE /dashboard/dokumen-spmi/{dokumenSpmi}
+    Route::delete('/dokumen-spmi/{dokumenSpmi}', [DokumenSpmiController::class, 'destroy'])
+        ->name('dokumen-spmi.destroy');
+ 
+});
+Route::prefix('dashboard')->middleware(['web', 'auth'])->group(function () {
+ 
+    // INDEX  — GET    /dashboard
+    Route::get('/', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
+ 
+    // STORE  — POST   /dashboard/dokumen
+    Route::post('/dokumen', [AdminDashboardController::class, 'store'])
+        ->name('dashboard.dokumen.store');
+ 
+    // UPDATE — POST   /dashboard/dokumen/{adminDashboard}
+    // POST (bukan PUT) agar FormData multipart bekerja benar dari Alpine.js.
+    Route::post('/dokumen/{adminDashboard}', [AdminDashboardController::class, 'update'])
+        ->name('dashboard.dokumen.update');
+ 
+    // DESTROY — DELETE /dashboard/dokumen/{adminDashboard}
+    Route::delete('/dokumen/{adminDashboard}', [AdminDashboardController::class, 'destroy'])
+        ->name('dashboard.dokumen.destroy');
  
 });
 });

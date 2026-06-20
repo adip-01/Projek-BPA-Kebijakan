@@ -6,16 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-class DaftarDokumen extends Model
+class DokumenSpmi extends Model
 {
     use HasFactory;
 
     /**
-     * Eksplisit karena Laravel akan menebak "daftar_dokumen" (singular).
+     * Eksplisit agar tidak salah tebak ke "dokumen_spmi" (singular).
      *
      * @var string
      */
-    protected $table = 'daftar_dokumens';
+    protected $table = 'dokumen_spmis';
 
     /**
      * Kolom yang boleh diisi secara mass-assignment.
@@ -23,49 +23,42 @@ class DaftarDokumen extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        // Step 1
-        'standard',
-        'klasul',
-        'jenis_dokumen',
         'nama_dokumen',
-        'pemilik_dokumen',
-        'data_pendukung',
-        // Step 2
-        'link_aplikasi',
-        'revisi_dokumen',
-        'tanggal_efektif',
+        'nomor_dokumen',
+        'jenis_dokumen',
         'path_dokumen',
     ];
 
     /**
-     * Cast kolom tanggal agar otomatis jadi Carbon instance.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'tanggal_efektif' => 'date',
-    ];
-
-    /**
-     * Sertakan accessor file_url di setiap response JSON / array.
+     * Sertakan accessor file_url di setiap respons JSON / array.
      *
      * @var array<int, string>
      */
     protected $appends = ['file_url'];
+
+    /**
+     * Pilihan jenis dokumen yang valid.
+     * Dipakai untuk validasi 'in:' dan dropdown Blade/Alpine.
+     *
+     * @var array<int, string>
+     */
+    public const JENIS_OPTIONS = [
+        'STANDAR',
+        'KEBIJAKAN',
+        'MANUAL',
+        'FORMULIR',
+    ];
 
     // ──────────────────────────────────────────────────────────────
     // ACCESSOR
     // ──────────────────────────────────────────────────────────────
 
     /**
-     * URL publik file dokumen PDF.
-     * Mengembalikan null jika belum ada file.
+     * URL publik file PDF.
+     * Mengembalikan null jika belum ada file tersimpan.
      *
-     * Contoh pemakaian di Blade:
-     *   <a href="{{ $dok->file_url }}">Download</a>
-     *
-     * Contoh pemakaian di JavaScript (JSON response):
-     *   response.data.file_url
+     * Contoh di Blade  : <a href="{{ $dok->file_url }}">Download</a>
+     * Contoh di JS     : response.data.file_url
      *
      * @return string|null
      */

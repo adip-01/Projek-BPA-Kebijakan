@@ -8,47 +8,27 @@ use Illuminate\Support\Facades\Storage;
 
 class DaftarDokumenController extends Controller
 {
+    // ════════════════════════════════════════════════════════════════
+    // INDEX
+    // ════════════════════════════════════════════════════════════════
+
     /**
-     * Tampilkan halaman dashboard daftar dokumen kebijakan.
-     * Menghitung jumlah dokumen per BPA untuk ditampilkan di stat cards.
+     * Tampilkan halaman daftar dokumen dengan pagination.
      */
     public function index()
     {
-        // Data tabel dengan pagination
-        $dokumens = DaftarDokumen::latest()->paginate(4);
+        $dokumens = DaftarDokumen::latest()->paginate(10);
 
-        // Hitung per BPA untuk stat cards
-        $countBpa1 = DaftarDokumen::where('jenis_bpa', 'BPA 1')->count();
-        $countBpa2 = DaftarDokumen::where('jenis_bpa', 'BPA 2')->count();
-        $countBpa3 = DaftarDokumen::where('jenis_bpa', 'BPA 3')->count();
-        $countBpa4 = DaftarDokumen::where('jenis_bpa', 'BPA 4')->count();
-
-        return view('admin.dashboard', compact(
-            'dokumens',
-            'countBpa1',
-            'countBpa2',
-            'countBpa3',
-            'countBpa4'
-        ));
+        return view('admin.daftar-dokumen.index', compact('dokumens'));
     }
 
-    /**
-     * Simpan dokumen baru ke database.
-     * Wajib return JSON karena frontend menggunakan fetch (AJAX).
-     */
+
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_dokumen' => 'required|string|max:255',
-            'jenis_bpa'    => 'required|in:BPA 1,BPA 2,BPA 3,BPA 4',
-            'file_dokumen' => 'nullable|file|mimes:pdf|max:10240',
-        ], [
-            'nama_dokumen.required' => 'Nama dokumen wajib diisi.',
-            'jenis_bpa.required'    => 'Jenis dokumen BPA wajib dipilih.',
-            'jenis_bpa.in'          => 'Jenis BPA tidak valid.',
-            'file_dokumen.mimes'    => 'File harus berformat PDF.',
-            'file_dokumen.max'      => 'Ukuran file tidak boleh melebihi 10 MB.',
-        ]);
+        $request->validate(
+            $this->validationRules(),
+            $this->validationMessages()
+        );
 
         $pathDokumen = null;
 
@@ -58,9 +38,18 @@ class DaftarDokumenController extends Controller
         }
 
         DaftarDokumen::create([
-            'nama_dokumen' => $request->nama_dokumen,
-            'jenis_bpa'    => $request->jenis_bpa,
-            'path_dokumen' => $pathDokumen,
+            // Step 1
+            'standard'        => $request->standard,
+            'klasul'          => $request->klasul,
+            'jenis_dokumen'   => $request->jenis_dokumen,
+            'nama_dokumen'    => $request->nama_dokumen,
+            'pemilik_dokumen' => $request->pemilik_dokumen,
+            'data_pendukung'  => $request->data_pendukung,
+            // Step 2
+            'link_aplikasi'   => $request->link_aplikasi,
+            'revisi_dokumen'  => $request->revisi_dokumen,
+            'tanggal_efektif' => $request->tanggal_efektif ?: null,
+            'path_dokumen'    => $pathDokumen,
         ]);
 
         return response()->json([
@@ -69,32 +58,19 @@ class DaftarDokumenController extends Controller
         ], 201);
     }
 
-    /**
-     * Update dokumen yang sudah ada.
-     * Menggunakan POST (bukan PUT/PATCH) agar FormData multipart
-     * bekerja dengan benar dari Alpine.js fetch.
-     */
     public function update(Request $request, DaftarDokumen $daftarDokumen)
     {
-        $request->validate([
-            'nama_dokumen' => 'required|string|max:255',
-            'jenis_bpa'    => 'required|in:BPA 1,BPA 2,BPA 3,BPA 4',
-            'file_dokumen' => 'nullable|file|mimes:pdf|max:10240',
-        ], [
-            'nama_dokumen.required' => 'Nama dokumen wajib diisi.',
-            'jenis_bpa.required'    => 'Jenis dokumen BPA wajib dipilih.',
-            'jenis_bpa.in'          => 'Jenis BPA tidak valid.',
-            'file_dokumen.mimes'    => 'File harus berformat PDF.',
-            'file_dokumen.max'      => 'Ukuran file tidak boleh melebihi 10 MB.',
-        ]);
+        $request->validate(
+            $this->validationRules(),
+            $this->validationMessages()
+        );
 
         $pathDokumen = $daftarDokumen->path_dokumen; // Pertahankan file lama
 
-        // Jika ada file baru: hapus lama, simpan baru
         if ($request->hasFile('file_dokumen')) {
-            if ($daftarDokumen->path_dokumen &&
-                Storage::disk('public')->exists($daftarDokumen->path_dokumen)) {
-                Storage::disk('public')->delete($daftarDokumen->path_dokumen);
+            // Hapus file lama dari storage sebelum menyimpan yang baru
+            if ($pathDokumen && Storage::disk('public')->exists($pathDokumen)) {
+                Storage::disk('public')->delete($pathDokumen);
             }
 
             $pathDokumen = $request->file('file_dokumen')
@@ -102,9 +78,18 @@ class DaftarDokumenController extends Controller
         }
 
         $daftarDokumen->update([
-            'nama_dokumen' => $request->nama_dokumen,
-            'jenis_bpa'    => $request->jenis_bpa,
-            'path_dokumen' => $pathDokumen,
+            // Step 1
+            'standard'        => $request->standard,
+            'klasul'          => $request->klasul,
+            'jenis_dokumen'   => $request->jenis_dokumen,
+            'nama_dokumen'    => $request->nama_dokumen,
+            'pemilik_dokumen' => $request->pemilik_dokumen,
+            'data_pendukung'  => $request->data_pendukung,
+            // Step 2
+            'link_aplikasi'   => $request->link_aplikasi,
+            'revisi_dokumen'  => $request->revisi_dokumen,
+            'tanggal_efektif' => $request->tanggal_efektif ?: null,
+            'path_dokumen'    => $pathDokumen,
         ]);
 
         return response()->json([
@@ -113,8 +98,12 @@ class DaftarDokumenController extends Controller
         ]);
     }
 
+    // ════════════════════════════════════════════════════════════════
+    // DESTROY — Hapus dokumen (AJAX / fetch, method DELETE)
+    // ════════════════════════════════════════════════════════════════
+
     /**
-     * Hapus dokumen beserta file PDF-nya dari storage.
+     * Hapus file PDF dari storage (jika ada), lalu hapus record DB.
      */
     public function destroy(DaftarDokumen $daftarDokumen)
     {
@@ -129,5 +118,49 @@ class DaftarDokumenController extends Controller
             'success' => true,
             'message' => 'Dokumen berhasil dihapus.',
         ]);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // PRIVATE HELPERS — Validasi terpusat (dipakai store & update)
+    // ════════════════════════════════════════════════════════════════
+
+    /**
+     * Aturan validasi yang sama untuk store dan update.
+     *
+     * @return array<string, mixed>
+     */
+    private function validationRules(): array
+    {
+        return [
+            // Step 1 — wajib
+            'jenis_dokumen'   => 'required|string|max:255',
+            'nama_dokumen'    => 'required|string|max:255',
+            // Step 1 — opsional
+            'standard'        => 'nullable|string|max:255',
+            'klasul'          => 'nullable|string|max:255',
+            'pemilik_dokumen' => 'nullable|string|max:255',
+            'data_pendukung'  => 'nullable|string|max:2000',
+            // Step 2 — opsional
+            'link_aplikasi'   => 'nullable|string|max:500',
+            'revisi_dokumen'  => 'nullable|string|max:255',
+            'tanggal_efektif' => 'nullable|date',
+            'file_dokumen'    => 'nullable|file|mimes:pdf|max:10240',
+        ];
+    }
+
+    /**
+     * Pesan error validasi dalam Bahasa Indonesia.
+     *
+     * @return array<string, string>
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'jenis_dokumen.required' => 'Jenis dokumen wajib dipilih.',
+            'nama_dokumen.required'  => 'Nama dokumen wajib diisi.',
+            'tanggal_efektif.date'   => 'Format tanggal efektif tidak valid.',
+            'file_dokumen.mimes'     => 'File harus berformat PDF.',
+            'file_dokumen.max'       => 'Ukuran file tidak boleh melebihi 10 MB.',
+        ];
     }
 }

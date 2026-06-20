@@ -13,10 +13,21 @@ return new class extends Migration
     {
         Schema::create('daftar_dokumens', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_dokumen');
-            $table->enum('jenis_bpa', ['BPA 1', 'BPA 2', 'BPA 3', 'BPA 4'])
-                  ->default('BPA 1');
-            $table->string('path_dokumen')->nullable(); // Path file PDF
+
+            // ── Step 1 fields ───────────────────────────────────
+            $table->string('standard')->nullable();
+            $table->string('klasul')->nullable();
+            $table->string('jenis_dokumen');           // wajib
+            $table->string('nama_dokumen');             // wajib
+            $table->string('pemilik_dokumen')->nullable();
+            $table->text('data_pendukung')->nullable(); // bisa panjang
+
+            // ── Step 2 fields ───────────────────────────────────
+            $table->string('link_aplikasi')->nullable();
+            $table->string('revisi_dokumen')->nullable();
+            $table->date('tanggal_efektif')->nullable();
+            $table->string('path_dokumen')->nullable();  // path file PDF
+
             $table->timestamps();
         });
     }

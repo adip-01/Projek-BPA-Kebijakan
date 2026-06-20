@@ -5,16 +5,49 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User; // Tambahkan ini untuk memanggil Model User saat register
 
 class LoginController extends Controller
 {
-    // FORM LOGIN USER
+    // ─── FORM & PROSES REGISTER ──────────────────────────────────────
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Simpan user baru ke database
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'admin', // Dibuat default 'admin' agar kamu bisa langsung masuk ke dashboard admin
+        ]);
+
+        // Login otomatis setelah register berhasil
+        Auth::login($user);
+
+        // Redirect ke dashboard
+        return redirect()->route('dashboard');
+    }
+
+
+    // ─── FORM & PROSES LOGIN USER ────────────────────────────────────
+
     public function showUserLogin()
     {
         return view('auth.login');
     }
 
-    // PROSES LOGIN USER
     public function userLogin(Request $request)
     {
         // Validasi input untuk keamanan
@@ -41,13 +74,14 @@ class LoginController extends Controller
         ])->onlyInput('email'); // Tetap pertahankan isian email saat error
     }
 
-    // FORM LOGIN ADMIN
+
+    // ─── FORM & PROSES LOGIN ADMIN ───────────────────────────────────
+
     public function showAdminLogin()
     {
         return view('auth.admin-login');
     }
 
-    // PROSES LOGIN ADMIN
     public function adminLogin(Request $request)
     {
         // Validasi input
@@ -65,7 +99,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             // Redirect ke nama route admin.dashboard
-            return redirect()->route('admin.dashboard')->with('success', 'Login Admin berhasil!'); 
+            return redirect()->route('dashboard')->with('success', 'Login Admin berhasil!'); 
         }
 
         return back()->withErrors([
@@ -73,7 +107,9 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
-    // LOGOUT
+
+    // ─── LOGOUT ──────────────────────────────────────────────────────
+
     public function logout(Request $request)
     {
         Auth::logout();

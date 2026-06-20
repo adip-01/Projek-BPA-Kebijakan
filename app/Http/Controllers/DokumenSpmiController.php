@@ -2,37 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminDashboard;
+use App\Models\DokumenSpmi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class AdminDashboardController extends Controller
+class DokumenSpmiController extends Controller
 {
     // ════════════════════════════════════════════════════════════════
-    // INDEX — Halaman utama dashboard
+    // INDEX
     // ════════════════════════════════════════════════════════════════
 
     /**
-     * Tampilkan halaman dashboard.
-     * Menghitung jumlah dokumen per BPA untuk stat cards,
-     * dan mengambil daftar dokumen (paginated) untuk tabel.
+     * Tampilkan halaman Dokumen SPMI.
+     * Mengirimkan 4 variabel statistik untuk kartu + data tabel paginated.
      */
     public function index()
     {
-        // ── Stat cards BPA 1–4 ───────────────────────────────────
-        $countBpa1 = AdminDashboard::where('jenis_bpa', 'BPA 1')->count();
-        $countBpa2 = AdminDashboard::where('jenis_bpa', 'BPA 2')->count();
-        $countBpa3 = AdminDashboard::where('jenis_bpa', 'BPA 3')->count();
-        $countBpa4 = AdminDashboard::where('jenis_bpa', 'BPA 4')->count();
+        // ── Stat cards ───────────────────────────────────────────
+        $totalStandar   = DokumenSpmi::where('jenis_dokumen', 'STANDAR')->count();
+        $totalKebijakan = DokumenSpmi::where('jenis_dokumen', 'KEBIJAKAN')->count();
+        $totalManual    = DokumenSpmi::where('jenis_dokumen', 'MANUAL')->count();
+        $totalFormulir  = DokumenSpmi::where('jenis_dokumen', 'FORMULIR')->count();
 
-        // ── Tabel dokumen (4 per halaman, terbaru duluan) ────────
-        $dokumens = AdminDashboard::latest()->paginate(4);
+        // ── Tabel (10 per halaman, terbaru duluan) ───────────────
+        $dokumens = DokumenSpmi::latest()->paginate(10);
 
-        return view('admin.dashboard', compact(
-            'countBpa1',
-            'countBpa2',
-            'countBpa3',
-            'countBpa4',
+        return view('admin.dokumen_spmi.index', compact(
+            'totalStandar',
+            'totalKebijakan',
+            'totalManual',
+            'totalFormulir',
             'dokumens'
         ));
     }
@@ -55,18 +54,19 @@ class AdminDashboardController extends Controller
 
         if ($request->hasFile('file_dokumen')) {
             $pathDokumen = $request->file('file_dokumen')
-                ->store('admin_dashboard', 'public');
+                ->store('dokumen_spmi', 'public');
         }
 
-        AdminDashboard::create([
-            'nama_dokumen' => $request->nama_dokumen,
-            'jenis_bpa'    => $request->jenis_bpa,
-            'path_dokumen' => $pathDokumen,
+        DokumenSpmi::create([
+            'nama_dokumen'  => $request->nama_dokumen,
+            'nomor_dokumen' => $request->nomor_dokumen,
+            'jenis_dokumen' => $request->jenis_dokumen,
+            'path_dokumen'  => $pathDokumen,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Dokumen berhasil ditambahkan.',
+            'message' => 'Dokumen SPMI berhasil ditambahkan.',
         ], 201);
     }
 
@@ -79,34 +79,35 @@ class AdminDashboardController extends Controller
      * Menggunakan POST (bukan PUT/PATCH) agar FormData multipart
      * bekerja benar dari Alpine.js fetch.
      */
-    public function update(Request $request, AdminDashboard $adminDashboard)
+    public function update(Request $request, DokumenSpmi $dokumenSpmi)
     {
         $request->validate(
             $this->validationRules(),
             $this->validationMessages()
         );
 
-        $pathDokumen = $adminDashboard->path_dokumen; // Pertahankan file lama
+        $pathDokumen = $dokumenSpmi->path_dokumen; // Pertahankan file lama
 
         if ($request->hasFile('file_dokumen')) {
-            // Hapus file lama dari storage sebelum simpan yang baru
+            // Hapus file lama sebelum simpan yang baru
             if ($pathDokumen && Storage::disk('public')->exists($pathDokumen)) {
                 Storage::disk('public')->delete($pathDokumen);
             }
 
             $pathDokumen = $request->file('file_dokumen')
-                ->store('admin_dashboard', 'public');
+                ->store('dokumen_spmi', 'public');
         }
 
-        $adminDashboard->update([
-            'nama_dokumen' => $request->nama_dokumen,
-            'jenis_bpa'    => $request->jenis_bpa,
-            'path_dokumen' => $pathDokumen,
+        $dokumenSpmi->update([
+            'nama_dokumen'  => $request->nama_dokumen,
+            'nomor_dokumen' => $request->nomor_dokumen,
+            'jenis_dokumen' => $request->jenis_dokumen,
+            'path_dokumen'  => $pathDokumen,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Dokumen berhasil diperbarui.',
+            'message' => 'Dokumen SPMI berhasil diperbarui.',
         ]);
     }
 
@@ -117,18 +118,18 @@ class AdminDashboardController extends Controller
     /**
      * Hapus file PDF dari storage (jika ada), lalu hapus record DB.
      */
-    public function destroy(AdminDashboard $adminDashboard)
+    public function destroy(DokumenSpmi $dokumenSpmi)
     {
-        if ($adminDashboard->path_dokumen &&
-            Storage::disk('public')->exists($adminDashboard->path_dokumen)) {
-            Storage::disk('public')->delete($adminDashboard->path_dokumen);
+        if ($dokumenSpmi->path_dokumen &&
+            Storage::disk('public')->exists($dokumenSpmi->path_dokumen)) {
+            Storage::disk('public')->delete($dokumenSpmi->path_dokumen);
         }
 
-        $adminDashboard->delete();
+        $dokumenSpmi->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Dokumen berhasil dihapus.',
+            'message' => 'Dokumen SPMI berhasil dihapus.',
         ]);
     }
 
@@ -137,18 +138,19 @@ class AdminDashboardController extends Controller
     // ════════════════════════════════════════════════════════════════
 
     /**
-     * Aturan validasi yang sama untuk store dan update.
+     * Aturan validasi untuk store dan update.
      *
      * @return array<string, mixed>
      */
     private function validationRules(): array
     {
-        $bpaOptions = implode(',', AdminDashboard::BPA_OPTIONS);
+        $jenisOptions = implode(',', DokumenSpmi::JENIS_OPTIONS);
 
         return [
-            'nama_dokumen' => 'required|string|max:255',
-            'jenis_bpa'    => "required|in:{$bpaOptions}",
-            'file_dokumen' => 'nullable|file|mimes:pdf|max:10240',
+            'nama_dokumen'  => 'required|string|max:255',
+            'nomor_dokumen' => 'required|string|max:255',
+            'jenis_dokumen' => "required|in:{$jenisOptions}",
+            'file_dokumen'  => 'nullable|file|mimes:pdf|max:10240',
         ];
     }
 
@@ -160,11 +162,12 @@ class AdminDashboardController extends Controller
     private function validationMessages(): array
     {
         return [
-            'nama_dokumen.required' => 'Nama dokumen wajib diisi.',
-            'jenis_bpa.required'    => 'Jenis dokumen BPA wajib dipilih.',
-            'jenis_bpa.in'          => 'Pilihan BPA tidak valid. Pilih: BPA 1, BPA 2, BPA 3, atau BPA 4.',
-            'file_dokumen.mimes'    => 'File harus berformat PDF.',
-            'file_dokumen.max'      => 'Ukuran file tidak boleh melebihi 10 MB.',
+            'nama_dokumen.required'  => 'Nama dokumen wajib diisi.',
+            'nomor_dokumen.required' => 'Nomor dokumen wajib diisi.',
+            'jenis_dokumen.required' => 'Jenis dokumen wajib dipilih.',
+            'jenis_dokumen.in'       => 'Jenis dokumen tidak valid. Pilih: STANDAR, KEBIJAKAN, MANUAL, atau FORMULIR.',
+            'file_dokumen.mimes'     => 'File harus berformat PDF.',
+            'file_dokumen.max'       => 'Ukuran file tidak boleh melebihi 10 MB.',
         ];
     }
 }
