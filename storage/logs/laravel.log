@@ -597,3 +597,27 @@
 #65 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('D://New folder (...')
 #66 {main}
 "} 
+[2026-06-28 09:41:15] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:222)
+[stacktrace]
+#0 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(138): Illuminate/Log/LogManager->resolve(NULL, NULL)
+#1 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(125): Illuminate/Log/LogManager->get(NULL)
+#2 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(703): Illuminate/Log/LogManager->driver()
+#3 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(402): Illuminate/Log/LogManager->error('Call to undefin...', Array)
+#4 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(365): Illuminate/Foundation/Exceptions/Handler->reportThrowable(Object(Error))
+#5 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(641): Illuminate/Foundation/Exceptions/Handler->report(Object(Error))
+#6 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(200): Illuminate/Foundation/Console/Kernel->reportException(Object(Error))
+#7 D:/New folder (3)/SIMKEB/artisan(15): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#8 {main}
+"} 
+[2026-06-28 09:41:15] laravel.ERROR: Call to undefined method Illuminate\Foundation\AliasLoader::merge() {"exception":"[object] (Error(code: 0): Call to undefined method Illuminate\\Foundation\\AliasLoader::merge() at D:/New folder (3)/SIMKEB/config/app.php:27)
+[stacktrace]
+#0 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(115): require()
+#1 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(115): Illuminate/Foundation/Bootstrap/LoadConfiguration->Illuminate/Foundation/Bootstrap/{closure}()
+#2 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(96): Illuminate/Foundation/Bootstrap/LoadConfiguration->loadConfigurationFile(Object(Illuminate/Config/Repository), 'app', 'D://New folder (...', Array)
+#3 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(55): Illuminate/Foundation/Bootstrap/LoadConfiguration->loadConfigurationFiles(Object(Illuminate/Foundation/Application), Object(Illuminate/Config/Repository))
+#4 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(342): Illuminate/Foundation/Bootstrap/LoadConfiguration->bootstrap(Object(Illuminate/Foundation/Application))
+#5 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(494): Illuminate/Foundation/Application->bootstrapWith(Array)
+#6 D:/New folder (3)/SIMKEB/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(196): Illuminate/Foundation/Console/Kernel->bootstrap()
+#7 D:/New folder (3)/SIMKEB/artisan(15): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#8 {main}
+"} 
